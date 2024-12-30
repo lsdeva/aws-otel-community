@@ -1,0 +1,23 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t prometheus-sample-app:latest ./sample-apps/prometheus-sample-app
+
+      - name: Test Docker Image
+        run: |
+          echo "Running tests"
+          docker run -d -p 8080:8080 prometheus-sample-app:latest
+          curl -f http://localhost:8080 || exit 1
